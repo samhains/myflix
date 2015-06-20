@@ -1,19 +1,5 @@
-%article.video_category
-  %header
-    %h3= link_to "All Shows"
-  .videos.row
-    - @videos.each do |video|
-      .video.col-sm-2
-        =link_to video do
-          %img(src="#{video.small_cover_url}")
-        
+%article.video_category  
   - Category.all.each do |category|
-    %article.video_category
-      %header
-        %h3= link_to category.name
-      .videos.row
-        - category.videos.each do |video|
-          .video.col-sm-2
-            =link_to video do
-              %img(src="#{video.small_cover_url}")
+    = render 'shared/videos_by_category', category: category
+   
 
