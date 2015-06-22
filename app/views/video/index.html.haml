@@ -1,5 +1,4 @@
 %article.video_category  
-  - Category.all.each do |category|
-    = render 'shared/videos_by_category', category: category
+  =render @categories
    
 
