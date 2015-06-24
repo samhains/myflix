@@ -5,7 +5,7 @@ Myflix::Application.routes.draw do
   get '/login', to: 'sessions#new'
   post '/login', to: 'sessions#create'
   get '/logout', to: 'sessions#destroy'
-  root to: 'sessions#index'
+  root to: 'pages#front'
   resources :videos do
     collection do
       post 'search'
