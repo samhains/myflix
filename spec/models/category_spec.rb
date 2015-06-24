@@ -15,7 +15,7 @@ describe Category do
       wop_gun = Video.create(title: 'Wop Gun', description: 'Action Flick', categories: [action],created_at: 3.day.ago)
       vop_gun = Video.create(title: 'Vop Gun', description: 'Action Flick', categories: [action],created_at: 2.day.ago)
       pop_gun = Video.create(title: 'Pop Gun', description: 'Action Flick', categories: [action],created_at: 1.day.ago)
-      expect(action.recent_videos).to eq([pop_gun,vop_gun,wop_gun])
+      expect(action.recent_videos).to eq([ pop_gun, vop_gun, wop_gun ])
     end
 
     it "returns all the videos if there are less than 6" do
@@ -23,7 +23,7 @@ describe Category do
       wop_gun = Video.create(title: 'Wop Gun', description: 'Action Flick', categories: [action])
       vop_gun = Video.create(title: 'Vop Gun', description: 'Action Flick', categories: [action])
       pop_gun = Video.create(title: 'Pop Gun', description: 'Action Flick', categories: [action])
-      expect(action.recent_videos).to eq([pop_gun,vop_gun,wop_gun])
+      expect(action.recent_videos).to eq([ pop_gun, vop_gun, wop_gun ])
       
     end
 

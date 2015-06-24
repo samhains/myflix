@@ -9,11 +9,12 @@ class ApplicationController < ActionController::Base
    
   def logged_in?
     !!session[:user_id]
+    
   end
 
   def require_user
     unless logged_in?
-      flash[:notice] = "You can't go there!"
+      flash[:danger] = "You can't go there!"
       redirect_to root_path
     end
   end
