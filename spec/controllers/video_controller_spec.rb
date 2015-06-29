@@ -5,8 +5,8 @@ describe VideosController do
   describe "GET #show" do
     context "user is authenticated" do
       let(:video){ Fabricate(:video) }
-      let (:first_review){ Fabricate(:review, video: video)}
-      let (:second_review){ Fabricate(:review, video: video)}
+      let (:first_review){ Fabricate(:review, video: video) }
+      let (:second_review){ Fabricate(:review, video: video) }
 
       before do 
         user = Fabricate(:user)
@@ -44,10 +44,8 @@ describe VideosController do
     end
 
    it "renders to root path if user not authenticated" do
-      video = Fabricate(:video)
-      get :search, id: video.id
+      get :search
       expect(response).to redirect_to root_path
-      
     end
   end
 end

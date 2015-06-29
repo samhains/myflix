@@ -12,7 +12,7 @@ class ReviewsController < ApplicationController
       redirect_to video_path
     else
       @reviews = @video.reviews
-      flash[:danger] = "There was a problem with your submission"
+      flash.now[:danger] = "There was a problem with your submission"
       render 'videos/show'
     end
   end
