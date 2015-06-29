@@ -17,12 +17,12 @@
     .col-sm-10.col-sm-offset-1
       =bootstrap_form_for @review, url: reviews_path do |f| 
         =f.text_area :description, label: "Rate this video"
-        =f.select :rating, [['5 Stars', 5],['4 Stars', 4],['3 Stars', 3],['2 Stars', 2],['1 Stars', 1]]
+        =f.select :rating, [5,4,3,2,1].map{|num| [pluralize(num, "Star"),num]}
         =f.submit "Submit"
       %header
         %h3 User Reviews  (#{@video.reviews.count})
       %ul
-        - @video.reviews.each do |review|
+        - @reviews.each do |review|
           %article.review
             %li.row
               .col-sm-2

@@ -23,7 +23,7 @@ describe VideosController do
       end
 
       it "sets @reviews" do
-        expect(assigns(:reviews)).to eq([second_review, first_review])
+        expect(assigns(:reviews)).to  include(second_review, first_review)
       end
     end 
 

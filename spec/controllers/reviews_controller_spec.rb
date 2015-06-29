@@ -10,47 +10,75 @@ describe ReviewsController do
       expect(response).to redirect_to root_path
     end
 
-    it "creates @review if user is logged in" do
-      session[:user_id] = user.id
-      post :create, id: video.id, review: {rating: 5}
-      expect(assigns(:review)).to be_instance_of(Review)
-    end
-
-    it "creates @video if user is logged in" do
-      session[:user_id] = user.id
-      post :create, id: video.id, review: {rating: 5}
-      expect(assigns(:video)).to be_instance_of(Video)
-    end
-      
-    context "if save is successful" do
+    context "user is logged in" do
       before do
         session[:user_id] = user.id
-        post :create, id: video.id, review: { rating: 5, description: "Great video!" }
+      end
+        
+      it "creates @review" do
+        post :create, id: video.id, review: { rating: 5 }
+        expect(assigns(:review)).to be_instance_of(Review)
       end
 
-      it "displays successful flash notice" do
-        expect(flash[:success]).to_not be_blank
+      it "associates review with current_user" do
+        post :create, id: video.id, review: { rating:  5}
+        expect(assigns(:review).creator).to eq(user)
       end
 
-      it "redirects to video path" do
-        expect(response).to redirect_to video_path
+      it "associates review with video" do
+        post :create, id: video.id, review: { rating:  5}
+        expect(assigns(:review).video).to eq(video)
+      end
+
+      it "creates @video" do
+        post :create, id: video.id, review: { rating:  5}
+        expect(assigns(:video)).to be_instance_of(Video)
+      end
+        
+      context "if validation is successful" do
+        before do
+          post :create, id: video.id, review: { rating: 5, description: "Great video!" }
+        end
+
+        it "displays successful flash notice" do
+          expect(flash[:success]).to_not be_blank
+        end
+
+        it "redirects to video path" do
+          expect(response).to redirect_to video_path
+        end
+      end
+
+      context "if validation is unsuccessful" do
+        before do
+          post :create, id: video.id, review: { rating: 5}
+        end
+
+        it "creates @video" do
+          expect(assigns(:video)).to be_instance_of(Video)
+        end
+
+        it "creates @review" do
+          expect(assigns(:review)).to be_instance_of(Review)
+        end
+
+        it "should not create a review" do
+          expect(Review.count).to eq(0)
+        end
+
+        it "displays unsuccessful flash notice" do
+          expect(flash[:danger]).to_not be_blank
+        end
+
+        it "renders the video show page" do
+          expect(response).to render_template 'videos/show'
+        end
+
+        it "creates @reviews" do
+          review = Fabricate(:review,video: video)
+          expect(assigns(:reviews)).to eq([review])
+        end
       end
     end
-
-    context "if save is unsuccessful" do
-      before do
-        session[:user_id] = user.id
-        post :create, id: video.id, review: { rating: 5}
-      end
-
-      it "displays unsuccessful flash notice" do
-        expect(flash[:danger]).to_not be_blank
-      end
-
-      it "renders the video show page" do
-        expect(response).to render_template 'videos/show'
-      end
-    end
-
   end
 end
