@@ -8,7 +8,10 @@ Myflix::Application.routes.draw do
   root to: 'pages#front'
   resources :videos do
     collection do
-      post 'search'
+      get 'search'
+    end
+    member do
+      resources :reviews, only: [:create]
     end
   end
   resources :categories, only: [:show]
