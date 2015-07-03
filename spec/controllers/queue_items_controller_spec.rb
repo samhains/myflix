@@ -33,12 +33,6 @@ describe QueueItemsController do
           session[:user_id] = user.id
         end
 
-        it "sets @review to existing review for current user and video" do
-          review = Fabricate(:review, creator: user, video: video)
-          post :create, video_id: video.id
-          expect(assigns(:review)).to eq(review)
-        end
-
         it "associates queue item with most recent review for current user" do
           review_old = Fabricate(:review, creator: user, video: video, created_at: 2.weeks.ago)
           review_new = Fabricate(:review, creator: user, video: video)
@@ -80,23 +74,27 @@ describe QueueItemsController do
           expect(response).to redirect_to my_queue_path
         end
       end
-      #context "queue_item does not save successfully" do
-        #before do
-          #post :create
-        #end
+    end
 
-        #it "does not save to db" do
-          #expect(QueueItem.count).to eq(0)
-        #end
+    describe "DELETE #destroy" do
+      it "removes the queue item from the database" do
+        queue_item = Fabricate(:queue_item, user: user)
+        delete :destroy, id: queue_item.id
+        expect(QueueItem.count).to eq(0)
+      end
 
-        #it "shows error flash message" do
-          #expect(flash[:error]).to_not be_nil
-        #end
-        
-        #it "renders show video page" do
-          #expect(response).to render_template 'videos/show'
-        #end
+      it "should not delete item if it is not in the users queue" do
+        new_user = Fabricate(:user)
+        queue_item = Fabricate(:queue_item, user: new_user)
+        delete :destroy, id: queue_item.id
+        expect(QueueItem.count).to eq(1)
+      end
 
+      it "redirects to my queue path" do
+        queue_item = Fabricate(:queue_item, user: user)
+        delete :destroy, id: queue_item.id
+        expect(response).to redirect_to my_queue_path
       end
     end
+  end
 end
