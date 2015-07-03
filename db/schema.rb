@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150629184807) do
+ActiveRecord::Schema.define(version: 20150703183039) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,21 +36,13 @@ ActiveRecord::Schema.define(version: 20150629184807) do
   create_table "queue_items", force: true do |t|
     t.integer  "user_id"
     t.integer  "video_id"
-    t.integer  "review_id"
     t.integer  "order"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "queue_items", ["review_id"], name: "index_queue_items_on_review_id", using: :btree
   add_index "queue_items", ["user_id"], name: "index_queue_items_on_user_id", using: :btree
   add_index "queue_items", ["video_id"], name: "index_queue_items_on_video_id", using: :btree
-
-  create_table "queues", force: true do |t|
-    t.integer "user_id"
-  end
-
-  add_index "queues", ["user_id"], name: "index_queues_on_user_id", using: :btree
 
   create_table "reviews", force: true do |t|
     t.integer  "rating"
