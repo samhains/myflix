@@ -9,8 +9,10 @@
           %span Average Rating: #{average_rating(@video)}
         %p= @video.description
         .actions
-          %a.btn.btn-primary(href="") Watch Now
-          %a.btn.btn-default(href="") + My Queue
+          =link_to do
+            %button.btn.btn-primary Watch Now
+          =link_to queue_items_path(video_id: @video.id), method: :post do
+            %button.btn.btn-primary Add To Queue
 
 %section.reviews.container
   .row
