@@ -48,17 +48,12 @@ describe QueueItemsController do
 
         it "associates queue item with current user" do
           post :create, video_id: video.id
-          expect(assigns(:queue_item).user).to eq(user)
+          expect(QueueItem.first.user).to eq(user)
         end
 
         it "associates queue item with video" do
           post :create, video_id: video.id
-          expect(assigns(:queue_item).video).to eq(video)
-        end
-
-        it "sets @queue_item" do
-          post :create, video_id: video.id
-          expect(assigns(:queue_item)).to be_instance_of(QueueItem)
+          expect(QueueItem.first.video).to eq(video)
         end
 
         it "puts queue_item as last in the queue" do
@@ -78,11 +73,6 @@ describe QueueItemsController do
         it "creates a queue item in db" do
           post :create, video_id: video.id
           expect(QueueItem.count).to eq(1)
-        end
-
-        it "shows successful flash message" do
-          post :create, video_id: video.id
-          expect(flash[:success]).to_not be_nil
         end
 
         it "redirects to my_queue page" do

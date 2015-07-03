@@ -6,12 +6,9 @@ class QueueItemsController < ApplicationController
   
   def create
     video = Video.find(params[:video_id])
-    #current_user_video_included?(video) if video
     @review = Review.most_recent_review(current_user.id, video.id)  
     current_user_video_included?(video)
-    @queue_item = QueueItem.new(video_id: (video.id unless current_user_video_included?(video)), user: current_user, review: @review, order: new_item_order)
-    @queue_item.save 
-    flash[:success] = "Added to Queue!"
+    QueueItem.create(video_id: (video.id unless current_user_video_included?(video)), user: current_user, review: @review, order: new_item_order)
     redirect_to my_queue_path 
   end
 
