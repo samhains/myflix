@@ -11,7 +11,7 @@ describe Review do
       user = Fabricate(:user)
       video = Fabricate(:video)
       review_old = Fabricate(:review, creator: user, video: video, created_at: 2.weeks.ago)
-      review_new = Fabricate(:review, creator: user, video: video)
+      review_new = Fabricate(:review, creator: user, video: video, created_at: 1.week.ago)
       expect(Review.most_recent_review(user.id, video.id)).to eq(review_new)
     end
   end

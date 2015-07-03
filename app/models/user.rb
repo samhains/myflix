@@ -5,5 +5,10 @@ class User < ActiveRecord::Base
   has_many :reviews
   has_many :queue_items
   has_secure_password validations: false
-  
+
+  def has_queue_item?(queue_id)
+    QueueItem.find(queue_id).user == self
+  end
+
+ 
 end
