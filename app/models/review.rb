@@ -7,6 +7,5 @@ class Review < ActiveRecord::Base
   def self.most_recent_review(user_id, video_id)
     where(user_id: user_id, video_id: video_id).order('created_at DESC').first
   end
-    
    
 end

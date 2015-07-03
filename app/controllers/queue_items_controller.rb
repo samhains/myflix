@@ -5,17 +5,24 @@ class QueueItemsController < ApplicationController
   end
   
   def create
-    @review = Review.most_recent_review(current_user.id, params[:video_id])
-    @queue_item = QueueItem.new(video_id: params[:video_id], user: current_user, review: @review)
-    if @queue_item.save
-      flash[:success] = "Added to Queue!"
-      redirect_to my_queue_path
-    else
-      flash[:error] = "There has been a problem"
-      render 'videos/show'
-    end
+    video = Video.find(params[:video_id])
+    #current_user_video_included?(video) if video
+    @review = Review.most_recent_review(current_user.id, video.id)  
+    current_user_video_included?(video)
+    @queue_item = QueueItem.new(video_id: (video.id unless current_user_video_included?(video)), user: current_user, review: @review, order: new_item_order)
+    @queue_item.save 
+    flash[:success] = "Added to Queue!"
+    redirect_to my_queue_path 
   end
 
+  private
 
+  def new_item_order
+    current_user.queue_items.count+1
+  end
 
-end  
+  def current_user_video_included?(video)
+    #.map(&: is the equivalent of calling .video on each element in array
+    current_user.queue_items.map(&:video).include?(video)
+  end
+end
