@@ -39,11 +39,11 @@ describe QueueItemsController do
           expect(assigns(:review)).to eq(review)
         end
 
-        it "sets @review to most recent review for current user" do
+        it "associates queue item with most recent review for current user" do
           review_old = Fabricate(:review, creator: user, video: video, created_at: 2.weeks.ago)
           review_new = Fabricate(:review, creator: user, video: video)
           post :create, video_id: video.id
-          expect(assigns(:review)).to eq(review_new)
+          expect(QueueItem.first.review).to eq(review_new)
         end
 
         it "associates queue item with current user" do

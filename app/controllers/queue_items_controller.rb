@@ -6,9 +6,9 @@ class QueueItemsController < ApplicationController
   
   def create
     video = Video.find(params[:video_id])
-    @review = Review.most_recent_review(current_user.id, video.id)  
+    review = Review.most_recent_review(current_user.id, video.id)  
     current_user_video_included?(video)
-    QueueItem.create(video_id: (video.id unless current_user_video_included?(video)), user: current_user, review: @review, order: new_item_order)
+    QueueItem.create(video_id: (video.id unless current_user_video_included?(video)), user: current_user, review: review, order: new_item_order)
     redirect_to my_queue_path 
   end
 
@@ -19,7 +19,6 @@ class QueueItemsController < ApplicationController
   end
 
   def current_user_video_included?(video)
-    #.map(&: is the equivalent of calling .video on each element in array
     current_user.queue_items.map(&:video).include?(video)
   end
 end
