@@ -10,5 +10,29 @@ class User < ActiveRecord::Base
     QueueItem.find(queue_id).user == self
   end
 
+  def normalize_queue_item_order 
+    queue_items.each_with_index do |queue_item, index|
+      queue_item.update_attributes(order: index+1)
+    end
+  end
  
+  def order_queue_items(queue_items_data)
+    queue_items_data.each do |queue_item_data|
+      update_queue_item = QueueItem.find(queue_item_data[:id])
+      if self == update_queue_item.user
+        update_queue_item.update_attributes!(order: queue_item_data[:order])
+      end
+    end
+  end
+
+  def update_queue(queue_items_data)
+    ActiveRecord::Base.transaction do
+      order_queue_items(queue_items_data)
+      normalize_queue_item_order
+    end
+  end
+  
+  def video_included?(video)
+    queue_items.map(&:video).include?(video)
+  end
 end
