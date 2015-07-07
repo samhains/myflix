@@ -9,7 +9,7 @@ module ApplicationHelper
     end
   end
 
-  def ratings_array
-    [5,4,3,2,1].map { |x| ["#{x} Stars", x] } 
+  def options_for_ratings(selected=nil)
+    options_for_select( [5,4,3,2,1].map{|num| [pluralize(num, "Star"),num]}, selected )
   end
 end
