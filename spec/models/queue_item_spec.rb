@@ -6,7 +6,7 @@ describe QueueItem do
   let(:review) { Fabricate(:review, video: video, creator: user ) }
   let(:queue_item) { Fabricate(:queue_item, video: video, user: user) }
   let(:category) { video.categories.first }
-
+  it { should validate_numericality_of(:order).only_integer }
   it { should belong_to(:video) }
   it { should belong_to(:user) }
 
