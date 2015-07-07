@@ -17,10 +17,9 @@ class QueueItemsController < ApplicationController
 
   def update_queue
     begin
-      current_user.update_queue
       ActiveRecord::Base.transaction do
-        order_queue_items
-        normalize_queue_item_order
+      order_queue_items
+      normalize_queue_item_order
       end
     rescue ActiveRecord::RecordInvalid
       flash[:danger] = "Invalid position"
