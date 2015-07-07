@@ -104,6 +104,29 @@ describe QueueItemsController do
       end
     end
     describe "POST #update_queue" do
+      it "creates review if one does not already exist on queue item" do
+        queue_item1 = Fabricate(:queue_item, order:1)
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, 
+            order:1, 
+            video_id: queue_item1.video_id, 
+            rating: 2 }]
+        expect(queue_item1.reload.rating).to eq(2)
+      end
+
+      it "updates existing review score" do
+        review = Fabricate(:review, rating:1, creator: user)
+        video2 = Fabricate(:video, reviews: [review])
+        queue_item1 = Fabricate(:queue_item, video: video2, user: user)
+
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, 
+            order:1, 
+            video_id: video2.id, 
+            rating: 2 }]
+        expect(queue_item1.reload.rating).to eq(2)
+      end
+
       it "redirects to my_queue_path" do
         queue_item1 = Fabricate(:queue_item, order:1)
         queue_item2 = Fabricate(:queue_item, order:2) 

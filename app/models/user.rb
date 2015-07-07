@@ -6,6 +6,26 @@ class User < ActiveRecord::Base
   has_many :queue_items, -> { order(:order) }
   has_secure_password validations: false
 
+  def update_reviews(queue_items_data)
+    queue_items_data.each do |queue_item_data|
+      review = most_recent_review(queue_item_data[:video_id])
+      if review
+        review.update_attribute(:rating, queue_item_data[:rating])
+      else
+        Review.create(
+          creator: self, 
+          description: "test", 
+          rating: queue_item_data[:rating],
+          video_id: queue_item_data[:video_id]
+        )
+      end
+    end
+  end
+
+  def most_recent_review(video_id)
+    Review.where(user_id: self.id, video_id: video_id).order('created_at DESC').first
+  end
+
   def has_queue_item?(queue_id)
     QueueItem.find(queue_id).user == self
   end

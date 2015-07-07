@@ -18,6 +18,7 @@ class QueueItemsController < ApplicationController
   def update_queue
     begin
       current_user.update_queue(params[:queue_items])
+      current_user.update_reviews(params[:queue_items])
     rescue ActiveRecord::RecordInvalid
       flash[:danger] = "Invalid position"
     end
@@ -31,6 +32,7 @@ class QueueItemsController < ApplicationController
   end
 
   private
+
   def new_item_order
     current_user.queue_items.count+1
   end
