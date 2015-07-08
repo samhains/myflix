@@ -26,9 +26,6 @@ describe QueueItemsController do
 
       context "user is logged in" do
 
-        let(:video) { Fabricate(:video) } 
-        let(:user) { Fabricate(:user) } 
-
         before do
           session[:user_id] = user.id
         end
