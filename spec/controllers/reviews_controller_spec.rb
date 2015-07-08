@@ -4,12 +4,11 @@ describe ReviewsController do
   describe "POST #create" do
     let(:video){ Fabricate(:video) }
     let(:user){ Fabricate(:user) }
-    
-    it "redirects to root if not logged in" do
-      post :create, id: video.id
-      expect(response).to redirect_to root_path
-    end
 
+    it_behaves_like "requires sign in" do
+      let(:action) { post :create, id: video.id }
+    end
+    
     context "user is logged in" do
       before do
         session[:user_id] = user.id

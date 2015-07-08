@@ -26,7 +26,7 @@ class QueueItemsController < ApplicationController
   
   def destroy
     QueueItem.destroy(params[:id]) if current_user.has_queue_item?(params[:id])
-    current_user.normalize_queue_item_order
+    current_user.normalize_queue_item_order 
     redirect_to my_queue_path
   end
 

@@ -4,9 +4,8 @@ describe QueueItemsController do
   let(:user) { Fabricate(:user) }
   let(:video) { Fabricate(:video) }
 
-  it "redirects user to root if not logged in" do
-    get :index
-    expect(response).to redirect_to root_path
+  it_behaves_like "requires sign in" do
+    let (:action) { get :index }
   end
 
   context "user is logged in" do

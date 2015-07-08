@@ -27,10 +27,11 @@ describe VideosController do
       end
     end 
 
-    it "redirects to root path if user not authenticated" do
-      video = Fabricate(:video)
-      get :show, id: video.id
-      expect(response).to redirect_to root_path
+    it_behaves_like "requires sign in" do
+      let(:action) do
+        video = Fabricate(:video)
+        get :show, id: video.id
+      end
     end
   end
 
@@ -43,9 +44,8 @@ describe VideosController do
       expect(assigns(:videos)).to eq([south_park])
     end
 
-   it "renders to root path if user not authenticated" do
-      get :search
-      expect(response).to redirect_to root_path
+    it_behaves_like "requires sign in" do
+      let(:action) { get :search } 
     end
   end
 end
