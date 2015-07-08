@@ -24,12 +24,6 @@ describe QueueItemsController do
 
     describe "POST #create" do
 
-      context "user is logged in" do
-
-        before do
-          session[:user_id] = user.id
-        end
-
         it "associates queue item with most recent rating for current user" do
           review_old = Fabricate(:review, creator: user, video: video, created_at: 2.weeks.ago)
           review_new = Fabricate(:review, creator: user, video: video, created_at: 1.day.ago)
@@ -70,7 +64,6 @@ describe QueueItemsController do
           post :create, video_id: video.id
           expect(response).to redirect_to my_queue_path
         end
-      end
     end
 
     describe "DELETE #destroy" do
