@@ -10,7 +10,8 @@ describe QueueItemsController do
   end
 
   context "user is logged in" do
-    before { session[:user_id] = user.id } 
+
+    before { set_current_user } 
 
     describe "GET #index" do
       it "sets @queue_items to items of logged in user" do
@@ -24,18 +25,9 @@ describe QueueItemsController do
 
     describe "POST #create" do
 
-      context "user is logged in" do
-
-        let(:video) { Fabricate(:video) } 
-        let(:user) { Fabricate(:user) } 
-
-        before do
-          session[:user_id] = user.id
-        end
-
         it "associates queue item with most recent rating for current user" do
           review_old = Fabricate(:review, creator: user, video: video, created_at: 2.weeks.ago)
-          review_new = Fabricate(:review, creator: user, video: video)
+          review_new = Fabricate(:review, creator: user, video: video, created_at: 1.day.ago)
           post :create, video_id: video.id
           expect(QueueItem.first.rating).to eq(review_new.rating)
         end
@@ -73,7 +65,6 @@ describe QueueItemsController do
           post :create, video_id: video.id
           expect(response).to redirect_to my_queue_path
         end
-      end
     end
 
     describe "DELETE #destroy" do
@@ -90,10 +81,117 @@ describe QueueItemsController do
         expect(QueueItem.count).to eq(1)
       end
 
+      it "normalizes the remaining queue items" do
+        queue_item1 = Fabricate(:queue_item, user: user, order:1)
+        queue_item2 = Fabricate(:queue_item, user: user, order:2)
+        delete :destroy, id: queue_item1.id
+        expect(queue_item2.reload.order).to eq(1)
+      end
+
       it "redirects to my queue path" do
         queue_item = Fabricate(:queue_item, user: user)
         delete :destroy, id: queue_item.id
         expect(response).to redirect_to my_queue_path
+      end
+    end
+    describe "POST #update_queue" do
+
+      it "creates review if one does not already exist on queue item" do
+        queue_item1 = Fabricate(:queue_item, order:1, user:user)
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, 
+            order:1, 
+            rating: 2 }]
+        expect(queue_item1.reload.rating).to eq(2)
+      end
+
+      it "updates existing review score" do
+        review = Fabricate(:review, rating:1, creator: user)
+        video2 = Fabricate(:video, reviews: [review])
+        queue_item1 = Fabricate(:queue_item, video: video2, user: user)
+
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, 
+            order:1, 
+            rating: 2 }]
+        expect(queue_item1.reload.rating).to eq(2)
+      end
+
+      it "redirects to my_queue_path" do
+        queue_item1 = Fabricate(:queue_item, order:1)
+        queue_item2 = Fabricate(:queue_item, order:2) 
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, order:2 },
+          { id: queue_item2.id, order:1 }]
+        expect(response).to redirect_to my_queue_path
+
+      end
+      it "updates the order of a single queue_item" do
+        queue_item1 = Fabricate(:queue_item, order:1, user: user)
+        queue_item2 = Fabricate(:queue_item, order:2, user: user) 
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, order:2 },
+          { id: queue_item2.id, order:1 }]
+        expect(user.queue_items).to eq([queue_item2, queue_item1])
+      end
+
+      it "reorders list without first item" do
+        queue_item1 = Fabricate(:queue_item, order:1, user:user)
+        queue_item2 = Fabricate(:queue_item, order:2, user:user) 
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, order:3 },
+          { id: queue_item2.id, order:2 }]
+        expect(user.queue_items).to eq([queue_item2, queue_item1])
+      end
+
+      it "maintains order if nothing changed" do
+        queue_item1 = Fabricate(:queue_item, order:1, user:user)
+        queue_item2 = Fabricate(:queue_item, order:2, user:user) 
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, order:1 },
+          { id: queue_item2.id, order:2 }]
+        expect(user.queue_items).to eq([queue_item1, queue_item2])
+
+      end
+
+      it "enforces natural ordering starting at 1" do
+        queue_item1 = Fabricate(:queue_item, order:1, user:user)
+        queue_item2 = Fabricate(:queue_item, order:2, user:user) 
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, order:1 },
+          { id: queue_item2.id, order:3 }]
+        expect(user.queue_items.map(&:order)).to eq([1,2])
+      end
+
+      it "shows flash error if input is invalid" do
+
+        queue_item1 = Fabricate(:queue_item, order:1, user:user)
+        queue_item2 = Fabricate(:queue_item, order:2, user:user) 
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, order:2 },
+          { id: queue_item2.id, order:'hello' }]
+        expect(flash[:danger]).to_not be_nil
+      end
+
+      it "does not reorder items if input is invalid" do
+        queue_item1 = Fabricate(:queue_item, order:1, user:user)
+        queue_item2 = Fabricate(:queue_item, order:2, user:user) 
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, order:2 },
+          { id: queue_item2.id, order:'hello' }]
+        expect(queue_item1.reload.order).to eq(1)
+
+      end
+
+      it "does not reorder items if they arent current_users" do
+        user2 = Fabricate(:user)
+        queue_item1 = Fabricate(:queue_item, order:1, user:user2)
+        queue_item2 = Fabricate(:queue_item, order:2, user:user) 
+        post :update_queue, queue_items: 
+          [{ id: queue_item1.id, order:2 },
+          { id: queue_item2.id, order:1 }]
+        expect(queue_item1.reload.order).to eq(1)
+
       end
     end
   end

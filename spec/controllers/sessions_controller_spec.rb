@@ -24,7 +24,7 @@ describe SessionsController do
         expect(response).to redirect_to home_path
       end
 
-      it "displays successful flash notice" do
+      it "sets successful flash notice" do
         expect(flash[:success]).not_to be_blank
       end
     end
@@ -38,7 +38,7 @@ describe SessionsController do
         expect(session[:user_id]).to be_nil
       end
 
-      it "displays unsuccessful flash notice" do
+      it "sets unsuccessful flash notice" do
         expect(flash[:danger]).not_to be_blank
       end
 
@@ -58,8 +58,5 @@ describe SessionsController do
       expect(response).to redirect_to root_path
     end
 
-    it "displays unsuccessful flash notice" do
-      expect(flash[:danger]).not_to be_blank
-    end
   end
 end
