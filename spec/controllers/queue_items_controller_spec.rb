@@ -10,7 +10,8 @@ describe QueueItemsController do
   end
 
   context "user is logged in" do
-    before { session[:user_id] = user.id } 
+
+    before { set_current_user } 
 
     describe "GET #index" do
       it "sets @queue_items to items of logged in user" do

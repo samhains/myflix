@@ -17,7 +17,7 @@ class QueueItem < ActiveRecord::Base
       new_review = Review.new(
         creator: user, 
         rating: rating_num,
-        video_id: video.id
+        video: video
       )
       new_review.save(validate:false)
     end
