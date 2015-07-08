@@ -6,22 +6,6 @@ class User < ActiveRecord::Base
   has_many :queue_items, -> { order(:order) }
   has_secure_password validations: false
 
-  def update_reviews(queue_items_data)
-    queue_items_data.each do |queue_item_data|
-      review = most_recent_review(queue_item_data[:video_id])
-      if review
-        review.update_attribute(:rating, queue_item_data[:rating])
-      else
-        Review.create(
-          creator: self, 
-          description: "test", 
-          rating: queue_item_data[:rating],
-          video_id: queue_item_data[:video_id]
-        )
-      end
-    end
-  end
-
   def most_recent_review(video_id)
     Review.where(user_id: self.id, video_id: video_id).order('created_at DESC').first
   end
@@ -36,18 +20,18 @@ class User < ActiveRecord::Base
     end
   end
  
-  def order_queue_items(queue_items_data)
+  def update_queue_items(queue_items_data)
     queue_items_data.each do |queue_item_data|
       update_queue_item = QueueItem.find(queue_item_data[:id])
       if self == update_queue_item.user
-        update_queue_item.update_attributes!(order: queue_item_data[:order])
+        update_queue_item.update_attributes!(order: queue_item_data[:order], rating: queue_item_data[:rating])
       end
     end
   end
 
   def update_queue(queue_items_data)
     ActiveRecord::Base.transaction do
-      order_queue_items(queue_items_data)
+      update_queue_items(queue_items_data)
       normalize_queue_item_order
     end
   end

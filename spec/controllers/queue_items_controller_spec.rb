@@ -35,7 +35,7 @@ describe QueueItemsController do
 
         it "associates queue item with most recent rating for current user" do
           review_old = Fabricate(:review, creator: user, video: video, created_at: 2.weeks.ago)
-          review_new = Fabricate(:review, creator: user, video: video)
+          review_new = Fabricate(:review, creator: user, video: video, created_at: 1.day.ago)
           post :create, video_id: video.id
           expect(QueueItem.first.rating).to eq(review_new.rating)
         end
@@ -104,8 +104,11 @@ describe QueueItemsController do
       end
     end
     describe "POST #update_queue" do
+      it "deletes a rating if input is set to blank" do
+      end
+
       it "creates review if one does not already exist on queue item" do
-        queue_item1 = Fabricate(:queue_item, order:1)
+        queue_item1 = Fabricate(:queue_item, order:1, user:user)
         post :update_queue, queue_items: 
           [{ id: queue_item1.id, 
             order:1, 

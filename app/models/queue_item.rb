@@ -7,14 +7,28 @@ class QueueItem < ActiveRecord::Base
   delegate :name, to: :category, prefix: :category
 
   def rating
-    video.reviews.first.rating unless video.reviews.empty?
+    review.rating if review
+  end
+
+  def rating=(rating_num)
+    if review
+      review.update_attribute(:rating, rating_num) 
+    else
+      new_review = Review.new(
+        creator: user, 
+        rating: rating_num,
+        video_id: video.id
+      )
+      new_review.save(validate:false)
+    end
   end
 
   def category
     video.categories.first
   end
 
-  def update_queue
-
+  private
+  def review
+   @review ||= Review.where(user_id: user.id, video_id: video.id).order("created_at DESC").first
   end
 end
