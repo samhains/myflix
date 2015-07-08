@@ -8,4 +8,8 @@ module ApplicationHelper
       (avg.to_f/video.reviews.count).round(2)
     end
   end
+
+  def options_for_ratings(selected=nil)
+    options_for_select( [5,4,3,2,1].map{|num| [pluralize(num, "Star"),num]}, selected )
+  end
 end
