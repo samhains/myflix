@@ -11,8 +11,9 @@
         .actions
           =link_to do
             %button.btn.btn-primary Watch Now
-          =link_to queue_items_path(video_id: @video.id), method: :post do
-            %button.btn.btn-primary Add To Queue
+          -unless video_in_queue(@video)
+            =link_to queue_items_path(video_id: @video.id), method: :post do
+              %button.btn.btn-primary Add To Queue
 
 %section.reviews.container
   .row
